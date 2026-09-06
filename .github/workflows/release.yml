@@ -50,7 +50,7 @@ jobs:
         with:
           repository: BasaltBE/Basalt
           ref: development
-          path: basalt/src
+          path: basalt
 
       - name: Check out plugin
         uses: actions/checkout@v4
