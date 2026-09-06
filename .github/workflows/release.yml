@@ -1,0 +1,44 @@
+name: Build and Release Plugin
+
+on:
+  push:
+
+permissions:
+  contents: write
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  PROJECT: plugins/ExamplePlugin/ExamplePlugin.csproj
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Basalt
+        uses: actions/checkout@v4
+        with:
+          repository: BasaltBE/Basalt
+          path: basalt
+
+      - name: Check out plugin
+        uses: actions/checkout@v4
+        with:
+          path: basalt/plugins/ExamplePlugin
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Build plugin
+        working-directory: basalt
+        run: dotnet publish ${{ env.PROJECT }} --configuration Release --output publish
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}-${{ github.sha }}
+          name: Plugin build ${{ github.run_number }}
+          generate_release_notes: true
+          prerelease: true
+          files: basalt/publish/ExamplePlugin.dll
