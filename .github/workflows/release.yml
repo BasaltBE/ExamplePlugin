@@ -11,7 +11,38 @@ env:
   PROJECT: plugins/ExamplePlugin/ExamplePlugin.csproj
 
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      exists: ${{ steps.release.outputs.exists }}
+    steps:
+      - name: Check out Basalt
+        uses: actions/checkout@v4
+        with:
+          repository: BasaltBE/Basalt
+          path: basalt
+
+      - name: Read Basalt version
+        id: version
+        working-directory: basalt
+        run: |
+          version=$(sed -n 's:.*<Version>\([^<]*\)</Version>.*:\1:p' src/Basalt/Basalt.csproj | head -n 1)
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check for existing release
+        id: release
+        run: |
+          if git ls-remote --tags "https://github.com/${{ github.repository }}.git" "refs/tags/v${{ steps.version.outputs.version }}" | grep -q .; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
   build:
+    needs: version
+    if: needs.version.outputs.exists == 'false'
     runs-on: ubuntu-latest
     steps:
       - name: Check out Basalt
@@ -37,8 +68,8 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: build-${{ github.run_number }}-${{ github.sha }}
-          name: Plugin build ${{ github.run_number }}
+          tag_name: v${{ needs.version.outputs.version }}
+          name: Plugin v${{ needs.version.outputs.version }}
           generate_release_notes: true
           prerelease: true
           files: basalt/publish/ExamplePlugin.dll
