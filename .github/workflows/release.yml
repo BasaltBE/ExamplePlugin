@@ -49,7 +49,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: BasaltBE/Basalt
-          path: basalt
+          path: basalt/src
 
       - name: Check out plugin
         uses: actions/checkout@v4
