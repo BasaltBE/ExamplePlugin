@@ -1,0 +1,24 @@
+<Project>
+  <Target Name="BundlePlugin" AfterTargets="Publish" BeforeTargets="DeployPlugin">
+    <ItemGroup>
+      <PluginAssemblies Include="$(TargetPath)" />
+      <PluginDependencies Include="$(PublishDir)*.dll"
+                          Exclude="$(PublishDir)$(TargetName)$(TargetExt);$(PublishDir)$(TargetName).bundled$(TargetExt);$(PublishDir)Basalt.dll;$(PublishDir)Basalt.BedrockProtocol.dll;$(PublishDir)Binary.dll;$(PublishDir)Tracy.dll" />
+      <PluginAssemblies Include="@(PluginDependencies)" />
+    </ItemGroup>
+    <PropertyGroup>
+      <BundledPluginPath>$(IntermediateOutputPath)$(TargetName).bundled$(TargetExt)</BundledPluginPath>
+    </PropertyGroup>
+    <Delete Files="$(BundledPluginPath)" />
+    <ILRepack Parallel="true" DebugInfo="false" AllowDuplicateResources="false"
+              InputAssemblies="@(PluginAssemblies)"
+              LibraryPath="$(PublishDir);$(OutputPath);$(MSBuildProjectDirectory)\..\..\src\Basalt\bin\$(Configuration)\$(TargetFramework)"
+              TargetKind="SameAsPrimaryAssembly" OutputFile="$(BundledPluginPath)" />
+    <Copy SourceFiles="$(BundledPluginPath)" DestinationFiles="$(PublishDir)$(TargetName)$(TargetExt)" />
+    <Delete Files="$(BundledPluginPath)" />
+  </Target>
+  <Target Name="DeployPlugin" AfterTargets="Publish">
+    <Copy SourceFiles="$(PublishDir)$(TargetName).dll" DestinationFolder="$(MSBuildProjectDirectory)" />
+    <Delete Files="$(MSBuildProjectDirectory)\Basalt.BedrockProtocol.dll;$(MSBuildProjectDirectory)\YamlDotNet.dll" />
+  </Target>
+</Project>
