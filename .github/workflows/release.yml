@@ -25,9 +25,10 @@ jobs:
 
       - name: Read Basalt version
         id: version
-        working-directory: basalt
         run: |
-          version=$(sed -n 's:.*<Version>\([^<]*\)</Version>.*:\1:p' src/Basalt/Basalt.csproj | head -n 1)
+          project="$GITHUB_WORKSPACE/basalt/src/Basalt/Basalt.csproj"
+          test -f "$project"
+          version=$(sed -n 's:.*<Version>\([^<]*\)</Version>.*:\1:p' "$project" | head -n 1)
           test -n "$version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
