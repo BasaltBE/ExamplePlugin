@@ -1,7 +1,7 @@
 using Basalt;
 using Basalt.Core.Plugins;
 
-[assembly: Plugin("ExamplePlugin", "1.0.0", Authors = ["BasaltBE"], EntryTypeName = "ExamplePlugin.ExamplePlugin")]
+[assembly: Plugin("ExamplePlugin", "1.0.0", Authors = ["BasaltBE", "AnyBananaGAME"], EntryTypeName = "ExamplePlugin.ExamplePlugin")]
 
 namespace ExamplePlugin;
 
