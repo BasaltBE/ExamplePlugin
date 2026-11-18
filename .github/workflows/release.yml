@@ -9,6 +9,7 @@ permissions:
 env:
   DOTNET_VERSION: "10.0.x"
   PROJECT: plugins/ExamplePlugin/ExamplePlugin.csproj
+  OUTPUT: publish
 
 jobs:
   version:
@@ -64,7 +65,7 @@ jobs:
 
       - name: Build plugin
         working-directory: basalt
-        run: dotnet publish ${{ env.PROJECT }} --configuration Release --output publish
+        run: dotnet run --project src/Basalt.CLI -- plugin build --project "${{ env.PROJECT }}" --output "${{ env.OUTPUT }}"
 
       - name: Create release
         uses: softprops/action-gh-release@v2
@@ -73,4 +74,4 @@ jobs:
           name: Plugin v${{ needs.version.outputs.version }}
           generate_release_notes: true
           prerelease: true
-          files: basalt/publish/ExamplePlugin.dll
+          files: basalt/publish/**
