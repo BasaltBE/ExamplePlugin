@@ -63,9 +63,12 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Install Basalt CLI
+        run: dotnet tool install --global BasaltBE.CLI
+
       - name: Build plugin
         working-directory: basalt
-        run: dotnet run --project src/Basalt.CLI -- plugin build --project "${{ env.PROJECT }}" --output "${{ env.OUTPUT }}"
+        run: basalt plugin build --project "${{ env.PROJECT }}" --output "${{ env.OUTPUT }}"
 
       - name: Create release
         uses: softprops/action-gh-release@v2
