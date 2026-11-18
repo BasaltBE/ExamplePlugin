@@ -26,9 +26,9 @@ jobs:
       - name: Read plugin version
         id: version
         run: |
-          source="$GITHUB_WORKSPACE/plugin/ExamplePlugin.cs"
-          test -f "$source"
-          version=$(sed -n 's:.*Plugin("[^"]*", "\([^"]*\)".*:\1:p' "$source" | head -n 1)
+          metadata="$GITHUB_WORKSPACE/plugin/plugin.json"
+          test -f "$metadata"
+          version=$(jq -er '.version | strings | select(length > 0)' "$metadata")
           test -n "$version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
